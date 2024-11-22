@@ -9,14 +9,18 @@ public class Object {
 	public String collName;
 	public String docContents;
 	public String uKey;
+	public String operator;
+	public String returnType;
 	
 	public Object() {}
 	
-	public Object(String dbName, String collName, String docContents, String uKey) {
+	public Object(String dbName, String collName, String docContents, String uKey, String operator, String returnType) {
 		this.dbName = dbName;
 		this.collName = collName;
 		this.docContents = docContents;
 		this.uKey = uKey;
+		this.operator = operator;
+		this.returnType = returnType;
 	}
 	
 	public String getDBName() {
@@ -35,4 +39,11 @@ public class Object {
 		return this.uKey;
 	}
 	
+	public String getOperator() {
+		return this.operator;
+	}
+	
+	public String getReturnType() {
+		return this.returnType;
+	}
 }

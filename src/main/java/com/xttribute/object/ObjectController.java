@@ -10,6 +10,7 @@ import java.util.Map;
 import javax.swing.text.Document;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -29,6 +30,7 @@ import org.springframework.http.MediaType;
 
 import com.xttribute.object.service.DatabaseService;
 import com.xttribute.object.service.DocumentService;
+import com.xttribute.object.controller.SecurityController;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
@@ -40,13 +42,12 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.xttribute.object.controller.JsonController;
 import com.xttribute.object.service.CollectionService;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
-
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
 class ObjectController{
 	DatabaseService dbService = new DatabaseService();
 	CollectionService collService = new CollectionService(); 
 	DocumentService docService = new DocumentService(); 
-	
 	/*
 	@RequestMapping(value = "/getDB/{dbName}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 	public @ResponseBody String checkDB(@PathVariable String dbName) {
@@ -88,12 +89,12 @@ class ObjectController{
 		return ResponseEntity.ok(dbMessage);
 	}
 	*/
+	
 	@PostMapping(value ="/newObject")
 	public ModelAndView newObject(@RequestBody Object newObject) throws JsonParseException, IOException, JSONException  {
 		 	ModelAndView modelAndView = new ModelAndView(new MappingJackson2JsonView());
 		 	if (dbService.databaseExists(newObject.getDBName(), modelAndView)){
 		 		if (collService.collectionExists(newObject.getDBName(),newObject.getCollName(), modelAndView)){
-		 			List<String> docKeys = JsonController.getJsonKeys(newObject.getDocContents(),modelAndView);
 					String dValue = JsonController.getJsonValueByKey(newObject.getDocContents(), newObject.getUKey(), modelAndView);
 					Map fDoc = docService.getDocument(newObject.getDBName(), newObject.getCollName(), newObject.getUKey(), dValue, modelAndView);
 					if (fDoc==null) {
@@ -105,5 +106,24 @@ class ObjectController{
 		 	}
 			return modelAndView;
 	  }
+	
+	@PostMapping(value ="/matchObject")
+	public ModelAndView findObject(@RequestBody Object newObject) throws JsonParseException, IOException, JSONException  {
+		ModelAndView modelAndView = new ModelAndView(new MappingJackson2JsonView());
+	 	if (dbService.databaseExists(newObject.getDBName(), modelAndView)){
+	 		if (collService.collectionExists(newObject.getDBName(),newObject.getCollName(), modelAndView)){
+	 			List<String> docKeys = JsonController.getJsonKeys(newObject.getDocContents(),modelAndView);
+				Map fDoc = docService.getDocumentByOperator(newObject.getDBName(), newObject.getCollName(), newObject.getDocContents(), newObject.getOperator(), modelAndView);
+				if (fDoc!=null) {
+					switch (newObject.getReturnType()) {
+						case "token":
+							String token = SecurityController.generateToken((String) fDoc.get(docKeys.get(0)));
+							modelAndView.addObject(newObject.getReturnType(),token);
+					}
+				}
+	 		}
+	 	}
+		return modelAndView;
+	}
 	
 }
