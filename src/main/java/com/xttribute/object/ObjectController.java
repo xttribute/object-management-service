@@ -99,6 +99,8 @@ class ObjectController{
 					Map fDoc = docService.getDocument(newObject.getDBName(), newObject.getCollName(), newObject.getUKey(), dValue, modelAndView);
 					if (fDoc==null) {
 						docService.saveDocument(newObject.getDBName(), newObject.getCollName(), newObject.getDocContents(), modelAndView);
+						Map savedDoc = docService.getDocument(newObject.getDBName(), newObject.getCollName(), newObject.getUKey(), dValue, modelAndView);
+						modelAndView.addObject("_id", savedDoc.get("_id").toString());
 					}
 					//fDoc.get("name");
 					
@@ -119,6 +121,7 @@ class ObjectController{
 						case "token":
 							String token = SecurityController.generateToken((String) fDoc.get(docKeys.get(0)));
 							modelAndView.addObject(newObject.getReturnType(),token);
+							modelAndView.addObject("_id", fDoc.get("_id").toString());
 					}
 				}
 	 		}
