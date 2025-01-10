@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.text.Document;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -36,9 +34,9 @@ public class DocumentService {
 		return mTemplate.findOne(query, Map.class, collName);
 	}
 	
-	public void saveDocument(String dbName, String collName, String dContents, ModelAndView modelAndView) {
+	public void saveDocument(String dbName, String collName, String dContents, ModelAndView modelAndView) throws JsonParseException, IOException {
 		MongoTemplate mTemplate = (MongoTemplate) appconfig.mongoTemplate(mclient, dbName);
-		mTemplate.save(dContents, collName);
+		mTemplate.save(dContents, collName);		
 		modelAndView.addObject("doc_201","Document created");
 	}
 	
