@@ -9,16 +9,18 @@ public class Object {
 	public String collName;
 	public String docContents;
 	public String uKey;
+	public String updateKey;
 	public String operator;
 	public String returnType;
 	
 	public Object() {}
 	
-	public Object(String dbName, String collName, String docContents, String uKey, String operator, String returnType) {
+	public Object(String dbName, String collName, String docContents, String uKey, String updateKey, String operator, String returnType) {
 		this.dbName = dbName;
 		this.collName = collName;
 		this.docContents = docContents;
 		this.uKey = uKey;
+		this.updateKey = updateKey;
 		this.operator = operator;
 		this.returnType = returnType;
 	}
@@ -37,6 +39,10 @@ public class Object {
 	
 	public String getUKey() {
 		return this.uKey;
+	}
+	
+	public String getUpdateKey() {
+		return this.updateKey;
 	}
 	
 	public String getOperator() {
