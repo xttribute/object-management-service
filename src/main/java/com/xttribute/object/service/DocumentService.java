@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.BasicQuery;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -30,12 +31,22 @@ public class DocumentService {
 		MongoTemplate mTemplate = (MongoTemplate) appconfig.mongoTemplate(mclient, dbName);
 		if  (mTemplate.findOne(query, Map.class, collName) != null) {
 			modelAndView.addObject("doc_302","Document exists");
+		}else {
+			modelAndView.addObject("doc_404","Document does not exist");
 		}
 		return mTemplate.findOne(query, Map.class, collName);
 	}
 	
-	public void saveDocument(String dbName, String collName, String dContents, ModelAndView modelAndView) throws JsonParseException, IOException {
+	public void updateDocument(String dbName, String collName, String uKey, String uValue, String updateKey, String updateValue, ModelAndView modelAndView) throws JsonParseException, IOException {
+		Query query = new Query(Criteria.where(uKey).is(uValue));
+		Update update = new Update().set(updateKey, updateValue);
 		MongoTemplate mTemplate = (MongoTemplate) appconfig.mongoTemplate(mclient, dbName);
+		mTemplate.updateMulti(query, update, collName);		
+		modelAndView.addObject("doc_202","Document updated");
+	}
+	
+	public void saveDocument(String dbName, String collName, String dContents, ModelAndView modelAndView) throws JsonParseException, IOException {
+		MongoTemplate mTemplate = (MongoTemplate) appconfig.mongoTemplate(mclient, dbName);		
 		mTemplate.save(dContents, collName);		
 		modelAndView.addObject("doc_201","Document created");
 	}

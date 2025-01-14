@@ -129,4 +129,23 @@ class ObjectController{
 		return modelAndView;
 	}
 	
+	@PostMapping(value ="/editObject")
+	public ModelAndView editObject(@RequestBody Object newObject) throws JsonParseException, IOException, JSONException  {
+		 	ModelAndView modelAndView = new ModelAndView(new MappingJackson2JsonView());
+		 	if (dbService.databaseExists(newObject.getDBName(), modelAndView)){
+		 		if (collService.collectionExists(newObject.getDBName(),newObject.getCollName(), modelAndView)){
+					String dValue = JsonController.getJsonValueByKey(newObject.getDocContents(), newObject.getUKey(), modelAndView);
+					Map fDoc = docService.getDocument(newObject.getDBName(), newObject.getCollName(), newObject.getUKey(), dValue, modelAndView);
+					if (fDoc!=null) {
+						String updateValue = JsonController.getJsonValueByKey(newObject.getDocContents(), newObject.getUpdateKey(), modelAndView);
+						docService.updateDocument(newObject.getDBName(), newObject.getCollName(), newObject.getUKey(), fDoc.get(newObject.getUKey()).toString(), newObject.getUpdateKey(), updateValue, modelAndView);
+					}
+					//fDoc.get("name");
+					
+		 		}
+		 	}
+			return modelAndView;
+	  }
+	
+	
 }
