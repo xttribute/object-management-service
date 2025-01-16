@@ -109,6 +109,23 @@ class ObjectController{
 			return modelAndView;
 	  }
 	
+	@PostMapping(value ="/getOneObject")
+	public ModelAndView getOneObject(@RequestBody Object newObject) throws JsonParseException, IOException, JSONException  {
+		 	ModelAndView modelAndView = new ModelAndView(new MappingJackson2JsonView());
+		 	if (dbService.databaseExists(newObject.getDBName(), modelAndView)){
+		 		if (collService.collectionExists(newObject.getDBName(),newObject.getCollName(), modelAndView)){
+					String dValue = JsonController.getJsonValueByKey(newObject.getDocContents(), newObject.getUKey(), modelAndView);
+					Map fDoc = docService.getDocument(newObject.getDBName(), newObject.getCollName(), newObject.getUKey(), dValue, modelAndView);
+					if (fDoc!=null) {
+						modelAndView.addObject("object", fDoc);
+					}
+					//fDoc.get("name");
+					
+		 		}
+		 	}
+			return modelAndView;
+	  }
+	
 	@PostMapping(value ="/matchObject")
 	public ModelAndView findObject(@RequestBody Object newObject) throws JsonParseException, IOException, JSONException  {
 		ModelAndView modelAndView = new ModelAndView(new MappingJackson2JsonView());
