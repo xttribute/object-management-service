@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
@@ -32,6 +33,13 @@ public class JsonController {
 		JSONObject jContents = new JSONObject(docContent);
 		String dValue = jContents.getString(key);
 		return dValue;
+	}
+	public static String getValue(Map map ,String key) {
+		return map.get(key).toString();
+	}
+	public static Map setValue(Map map, String key, String val) {
+		 map.put(key, val);
+		 return map;
 	}
 	
 }
