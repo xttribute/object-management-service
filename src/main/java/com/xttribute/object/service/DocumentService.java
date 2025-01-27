@@ -51,25 +51,33 @@ public class DocumentService {
 		modelAndView.addObject("doc_201","Document created");
 	}
 	
-	public Map<String, Object> getDocumentByOperator (String dbName, String collName, String dContents, String operator, ModelAndView modelAndView) throws JsonParseException, IOException, JSONException {
+	public List<Map> getDocumentByOperator (String dbName, String collName, String dContents, String operator, ModelAndView modelAndView) throws JsonParseException, IOException, JSONException {
 		MongoTemplate mTemplate = (MongoTemplate) appconfig.mongoTemplate(mclient, dbName);
 		List<String> docKeys = JsonController.getJsonKeys(dContents,modelAndView);
-		String q = null;
-		for (int i=0; i< docKeys.size(); i++) {
-			String dValue = JsonController.getJsonValueByKey(dContents, docKeys.get(i), modelAndView);
-			if(i==0) {
-				q = "{ $"+operator+":[{ "+docKeys.get(i)+":'"+dValue+"'},";
-			}else {
-				q +="{"+docKeys.get(i)+":'"+dValue+"'}";
-			}			
+		Query query; 
+		if(operator=="none") {
+			String q = null;
+			for (int i=0; i< docKeys.size(); i++) {
+				String dValue = JsonController.getJsonValueByKey(dContents, docKeys.get(i), modelAndView);
+				if(i==0) {
+					q = "{ $"+operator+":[{ "+docKeys.get(i)+":'"+dValue+"'},";
+				}else {
+					q +="{"+docKeys.get(i)+":'"+dValue+"'}";
+				}			
+			}
+			q += "]}";
+		 query =new BasicQuery(q);
+
+		}else {
+			String dValue = JsonController.getJsonValueByKey(dContents, docKeys.get(0), modelAndView);
+		    query = new Query(Criteria.where(docKeys.get(0)).is(dValue));
 		}
-		q += "]}";
-		BasicQuery query =new BasicQuery(q);
-		if(mTemplate.findOne(query, Map.class, collName)!= null) {
+	
+		if(mTemplate.find(query, Map.class, collName)!= null) {
 			modelAndView.addObject("doc_302","Document matched");
 		}else {
 			modelAndView.addObject("doc_204","No document matched");
 		}
-		return mTemplate.findOne(query, Map.class, collName);
+		return mTemplate.find(query, Map.class, collName);
 	}
 }

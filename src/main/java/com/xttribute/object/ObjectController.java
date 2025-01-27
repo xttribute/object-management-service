@@ -125,6 +125,32 @@ class ObjectController{
 		 	}
 			return modelAndView;
 	  }
+	@PostMapping(value ="/getObjects")
+	public ModelAndView getObjects(@RequestBody Object newObject) throws JsonParseException, IOException, JSONException  {
+		ModelAndView modelAndView = new ModelAndView(new MappingJackson2JsonView());
+	 	if (dbService.databaseExists(newObject.getDBName(), modelAndView)){
+	 		if (collService.collectionExists(newObject.getDBName(),newObject.getCollName(), modelAndView)){
+	 			List<String> docKeys = JsonController.getJsonKeys(newObject.getDocContents(),modelAndView);
+				List<Map> fDoc = docService.getDocumentByOperator(newObject.getDBName(), newObject.getCollName(), newObject.getDocContents(), newObject.getOperator(), modelAndView);
+				if (fDoc!=null) {
+					switch (newObject.getReturnType()) {
+						case "list":
+							for(Map<String, Object> map : fDoc) {
+					
+								String convertedId = JsonController.getValue(map, "_id");
+							    map = JsonController.setValue(map, "_id", convertedId);
+								//modelAndView.addObject("objects"+i,map);
+							}
+							modelAndView.addObject("objects",fDoc);
+							//modelAndView.addObject("number_of_results", i);
+							
+					}
+				}
+	 		}
+	 	}
+		return modelAndView;
+	}
+	
 	
 	@PostMapping(value ="/matchObject")
 	public ModelAndView findObject(@RequestBody Object newObject) throws JsonParseException, IOException, JSONException  {
@@ -132,13 +158,17 @@ class ObjectController{
 	 	if (dbService.databaseExists(newObject.getDBName(), modelAndView)){
 	 		if (collService.collectionExists(newObject.getDBName(),newObject.getCollName(), modelAndView)){
 	 			List<String> docKeys = JsonController.getJsonKeys(newObject.getDocContents(),modelAndView);
-				Map fDoc = docService.getDocumentByOperator(newObject.getDBName(), newObject.getCollName(), newObject.getDocContents(), newObject.getOperator(), modelAndView);
+				List<Map> fDoc = docService.getDocumentByOperator(newObject.getDBName(), newObject.getCollName(), newObject.getDocContents(), newObject.getOperator(), modelAndView);				
 				if (fDoc!=null) {
 					switch (newObject.getReturnType()) {
 						case "token":
-							String token = SecurityController.generateToken((String) fDoc.get(docKeys.get(0)));
-							modelAndView.addObject(newObject.getReturnType(),token);
-							modelAndView.addObject("_id", fDoc.get("_id").toString());
+							for(Map<String, Object> map : fDoc) {	
+								String matchKey = JsonController.getValue(map, docKeys.get(0));
+								String matchId = JsonController.getValue(map, "_id");
+								String token = SecurityController.generateToken(matchKey);
+								modelAndView.addObject(newObject.getReturnType(),token);
+								modelAndView.addObject("_id",matchId);
+							}
 					}
 				}
 	 		}
