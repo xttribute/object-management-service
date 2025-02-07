@@ -1,0 +1,18 @@
+gcp:
+  config:
+    file: xttribute_gcp_file_handler.json
+  project:
+    id: umehe-267901
+  bucket:
+    id: xttribute.app
+  dir:
+    name: dev
+
+logging:
+  level:
+    org.springframework: ERROR
+    com.xttribute.object: DEBUG
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"
+    file: "%d %p %c{1.} [%t] %m%n"
+  file: app.log

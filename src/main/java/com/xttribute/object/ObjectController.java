@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.swing.text.Document;
+import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -22,15 +23,23 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 //import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.http.MediaType;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.xttribute.object.service.DatabaseService;
 import com.xttribute.object.service.DocumentService;
 import com.xttribute.object.controller.SecurityController;
+import com.xttribute.object.dto.FileDto;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
@@ -42,23 +51,19 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.xttribute.object.controller.JsonController;
 import com.xttribute.object.service.CollectionService;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
+
+import com.xttribute.object.service.FileService;
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
+@RequiredArgsConstructor
 class ObjectController{
+
 	DatabaseService dbService = new DatabaseService();
 	CollectionService collService = new CollectionService(); 
 	DocumentService docService = new DocumentService(); 
-	/*
-	@RequestMapping(value = "/getDB/{dbName}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	public @ResponseBody String checkDB(@PathVariable String dbName) {
-		String dbMessage = null;
-		if (dbService.databaseExists(dbName)){
-			dbMessage = "Database exists";
-		}
-		return dbMessage;
-	}
-	*/
-	
+	private static final Logger LOGGER = LoggerFactory.getLogger(ObjectController.class);
+
+	private  FileService fileService = new FileService();
 	@PostMapping(value="/createDB")
 	public ModelAndView createDB(@RequestBody Object newObject) {
 		ModelAndView modelAndView = new ModelAndView(new MappingJackson2JsonView());
@@ -193,6 +198,28 @@ class ObjectController{
 		 	}
 			return modelAndView;
 	  }
+	
+	 @PostMapping(value ="/uploadFile", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+	    public ModelAndView uploadFile(@RequestParam("dbName") String dbName, @RequestParam("collName") String collName , @RequestParam("files")MultipartFile[] files, @RequestParam("xid") String xid, @RequestParam("type") String type, @RequestParam("folder") String folder){
+		 	ModelAndView modelAndView = new ModelAndView(new MappingJackson2JsonView());
+	        LOGGER.debug("Call addFile API");   
+	       
+	        try {
+	        	List<FileDto> uploadedFile = fileService.uploadFiles(files, folder);
+	        		for(FileDto file :uploadedFile) {
+	        			switch (type) {
+						case "thumbnail":
+							docService.updateDocument(dbName, collName, "_id", xid, type, file.getFileName(), modelAndView);
+							modelAndView.addObject(type,file.getFileName());
+	        			}
+	        		}
+	        	
+	        }catch (Exception e){
+	        
+	        }
+	       return modelAndView; 
+	  }
+	
 	
 	
 }
