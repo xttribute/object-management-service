@@ -48,6 +48,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.mongodb.client.result.DeleteResult;
 import com.xttribute.object.controller.JsonController;
 import com.xttribute.object.service.CollectionService;
 import org.springframework.web.servlet.view.json.MappingJackson2JsonView;
@@ -136,6 +137,18 @@ class ObjectController{
 		 	}
 			return modelAndView;
 	  }
+	@PostMapping(value ="/removeObject")
+	public ModelAndView removeObject(@RequestBody Object newObject) throws JsonParseException, IOException, JSONException  {
+		 	ModelAndView modelAndView = new ModelAndView(new MappingJackson2JsonView());
+		 	if (dbService.databaseExists(newObject.getDBName(), modelAndView)){
+		 		if (collService.collectionExists(newObject.getDBName(),newObject.getCollName(), modelAndView)){
+					String dValue = JsonController.getJsonValueByKey(newObject.getDocContents(), newObject.getUKey(), modelAndView);
+					DeleteResult deleteResult = docService.removeDocument(newObject.getDBName(), newObject.getCollName(), newObject.getUKey(), dValue, modelAndView);
+		 		}
+		 	}
+			return modelAndView;
+	  }
+	
 	@PostMapping(value ="/getObjects")
 	public ModelAndView getObjects(@RequestBody Object newObject) throws JsonParseException, IOException, JSONException  {
 		ModelAndView modelAndView = new ModelAndView(new MappingJackson2JsonView());
