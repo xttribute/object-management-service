@@ -18,6 +18,7 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.result.DeleteResult;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBObject;
 import com.xttribute.object.ApplicationConfiguration;
@@ -38,6 +39,18 @@ public class DocumentService {
 			modelAndView.addObject("doc_404","Document does not exist");
 		}
 		return mTemplate.findOne(query, Map.class, collName);
+	}
+	
+	public DeleteResult removeDocument (String dbName, String collName, String uKey, String uValue, ModelAndView modelAndView) {
+		Query query = new Query(Criteria.where(uKey).is(uValue));
+		MongoTemplate mTemplate = (MongoTemplate) appconfig.mongoTemplate(mclient, dbName);
+		DeleteResult deleteResult = mTemplate.remove(query,collName);
+		if(deleteResult.getDeletedCount()>0) {
+			modelAndView.addObject("doc_204","Document deleted");
+		}else {
+			modelAndView.addObject("doc_304","Deletion failed");
+		}
+		return deleteResult;
 	}
 	
 	public void updateDocument(String dbName, String collName, String uKey, String uValue, String updateKey, String updateValue, ModelAndView modelAndView) throws JsonParseException, IOException {
