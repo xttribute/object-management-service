@@ -1,6 +1,7 @@
 package com.xttribute.object.service;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 
@@ -17,6 +18,8 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBObject;
 import com.xttribute.object.ApplicationConfiguration;
 import com.xttribute.object.controller.JsonController;
 
@@ -51,6 +54,22 @@ public class DocumentService {
 		modelAndView.addObject("doc_201","Document created");
 	}
 	
+	public String saveDocumentTest(String dbName, String collName, String dContents, ModelAndView modelAndView) throws JsonParseException, IOException, IllegalArgumentException, IllegalAccessException {
+		MongoTemplate mTemplate = (MongoTemplate) appconfig.mongoTemplate(mclient, dbName);		
+		Object savedObject =  mTemplate.save(dContents, collName);
+		Class<?> clazz = savedObject.getClass();
+		Field[] fields = clazz.getDeclaredFields();
+		String _id =null;
+		for (Field field : fields) {
+			 if(field.toString().equals("private final java.util.LinkedHashMap org.bson.Document.documentAsMap")){
+				 field.setAccessible(true);
+				 Map value = (Map) field.get(savedObject);
+				 _id= value.get("_id").toString();
+			 }
+		}
+		modelAndView.addObject("doc_201","Document created");
+		return _id;
+	}
 	public List<Map> getDocumentByOperator (String dbName, String collName, String dContents, String operator, ModelAndView modelAndView) throws JsonParseException, IOException, JSONException {
 		MongoTemplate mTemplate = (MongoTemplate) appconfig.mongoTemplate(mclient, dbName);
 		List<String> docKeys = JsonController.getJsonKeys(dContents,modelAndView);
