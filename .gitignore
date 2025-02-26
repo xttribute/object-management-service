@@ -31,3 +31,4 @@ build/
 
 ### VS Code ###
 .vscode/
+src/main/resources/xttribute_gcp_file_handler.json

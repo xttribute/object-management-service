@@ -96,18 +96,24 @@ class ObjectController{
 	*/
 	
 	@PostMapping(value ="/newObject")
-	public ModelAndView newObject(@RequestBody Object newObject) throws JsonParseException, IOException, JSONException  {
+	public ModelAndView newObject(@RequestBody Object newObject) throws JsonParseException, IOException, JSONException, IllegalArgumentException, IllegalAccessException  {
 		 	ModelAndView modelAndView = new ModelAndView(new MappingJackson2JsonView());
 		 	if (dbService.databaseExists(newObject.getDBName(), modelAndView)){
+		 	
 		 		if (collService.collectionExists(newObject.getDBName(),newObject.getCollName(), modelAndView)){
-					String dValue = JsonController.getJsonValueByKey(newObject.getDocContents(), newObject.getUKey(), modelAndView);
-					Map fDoc = docService.getDocument(newObject.getDBName(), newObject.getCollName(), newObject.getUKey(), dValue, modelAndView);
-					if (fDoc==null) {
-						docService.saveDocument(newObject.getDBName(), newObject.getCollName(), newObject.getDocContents(), modelAndView);
-						Map savedDoc = docService.getDocument(newObject.getDBName(), newObject.getCollName(), newObject.getUKey(), dValue, modelAndView);
-						modelAndView.addObject("_id", savedDoc.get("_id").toString());
+					Map fDoc =null;
+					String dValue = null;
+					String uKey = newObject.getUKey();
+					if(uKey.equals("0")) {
+						fDoc=null;
+					}else {
+						dValue = JsonController.getJsonValueByKey(newObject.getDocContents(), newObject.getUKey(), modelAndView);
+						fDoc = docService.getDocument(newObject.getDBName(), newObject.getCollName(), newObject.getUKey(), dValue, modelAndView);
 					}
-					//fDoc.get("name");
+					if (fDoc==null) {
+						String savedObjectId = docService.saveDocumentTest(newObject.getDBName(), newObject.getCollName(), newObject.getDocContents(), modelAndView);
+						modelAndView.addObject("_id", savedObjectId);
+					}
 					
 		 		}
 		 	}
