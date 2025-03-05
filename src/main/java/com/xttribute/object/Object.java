@@ -12,10 +12,12 @@ public class Object {
 	public String updateKey;
 	public String operator;
 	public String returnType;
+	public String sortBy;
+	public String order;
 	
 	public Object() {}
 	
-	public Object(String dbName, String collName, String docContents, String uKey, String updateKey, String operator, String returnType) {
+	public Object(String dbName, String collName, String docContents, String uKey, String updateKey, String operator, String returnType, String sortBy, String order) {
 		this.dbName = dbName;
 		this.collName = collName;
 		this.docContents = docContents;
@@ -23,6 +25,8 @@ public class Object {
 		this.updateKey = updateKey;
 		this.operator = operator;
 		this.returnType = returnType;
+		this.sortBy = sortBy;
+		this.order = order;
 	}
 	
 	public String getDBName() {
@@ -51,5 +55,11 @@ public class Object {
 	
 	public String getReturnType() {
 		return this.returnType;
+	}
+	public String getSortBy() {
+		return this.sortBy;
+	}
+	public String getOrder() {
+		return this.order;
 	}
 }

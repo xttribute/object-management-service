@@ -155,7 +155,7 @@ class ObjectController{
 	 	if (dbService.databaseExists(newObject.getDBName(), modelAndView)){
 	 		if (collService.collectionExists(newObject.getDBName(),newObject.getCollName(), modelAndView)){
 	 			List<String> docKeys = JsonController.getJsonKeys(newObject.getDocContents(),modelAndView);
-				List<Map> fDoc = docService.getDocumentByOperator(newObject.getDBName(), newObject.getCollName(), newObject.getDocContents(), newObject.getOperator(), modelAndView);
+				List<Map> fDoc = docService.getDocumentByOperator(newObject.getDBName(), newObject.getCollName(), newObject.getDocContents(), newObject.getOperator(), newObject.getSortBy(), newObject.getOrder(),  modelAndView);
 				if (fDoc!=null) {
 					switch (newObject.getReturnType()) {
 						case "list":
@@ -182,7 +182,7 @@ class ObjectController{
 	 	if (dbService.databaseExists(newObject.getDBName(), modelAndView)){
 	 		if (collService.collectionExists(newObject.getDBName(),newObject.getCollName(), modelAndView)){
 	 			List<String> docKeys = JsonController.getJsonKeys(newObject.getDocContents(),modelAndView);
-				List<Map> fDoc = docService.getDocumentByOperator(newObject.getDBName(), newObject.getCollName(), newObject.getDocContents(), newObject.getOperator(), modelAndView);				
+				List<Map> fDoc = docService.getDocumentByOperator(newObject.getDBName(), newObject.getCollName(), newObject.getDocContents(), newObject.getOperator(), newObject.getSortBy(), newObject.getOrder(), modelAndView);				
 				if (fDoc!=null) {
 					switch (newObject.getReturnType()) {
 						case "token":
