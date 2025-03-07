@@ -14,10 +14,11 @@ public class Object {
 	public String returnType;
 	public String sortBy;
 	public String order;
+	public int limit;
 	
 	public Object() {}
 	
-	public Object(String dbName, String collName, String docContents, String uKey, String updateKey, String operator, String returnType, String sortBy, String order) {
+	public Object(String dbName, String collName, String docContents, String uKey, String updateKey, String operator, String returnType, String sortBy, String order, int limit) {
 		this.dbName = dbName;
 		this.collName = collName;
 		this.docContents = docContents;
@@ -27,6 +28,7 @@ public class Object {
 		this.returnType = returnType;
 		this.sortBy = sortBy;
 		this.order = order;
+		this.limit = limit;
 	}
 	
 	public String getDBName() {
@@ -61,5 +63,8 @@ public class Object {
 	}
 	public String getOrder() {
 		return this.order;
+	}
+	public int getLimit() {
+		return this.limit;
 	}
 }

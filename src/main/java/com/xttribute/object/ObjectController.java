@@ -154,13 +154,11 @@ class ObjectController{
 		ModelAndView modelAndView = new ModelAndView(new MappingJackson2JsonView());
 	 	if (dbService.databaseExists(newObject.getDBName(), modelAndView)){
 	 		if (collService.collectionExists(newObject.getDBName(),newObject.getCollName(), modelAndView)){
-	 			List<String> docKeys = JsonController.getJsonKeys(newObject.getDocContents(),modelAndView);
-				List<Map> fDoc = docService.getDocumentByOperator(newObject.getDBName(), newObject.getCollName(), newObject.getDocContents(), newObject.getOperator(), newObject.getSortBy(), newObject.getOrder(),  modelAndView);
+				List<Map> fDoc = docService.getDocumentByOperator(newObject.getDBName(), newObject.getCollName(), newObject.getDocContents(), newObject.getOperator(), newObject.getSortBy(), newObject.getOrder(), newObject.getLimit(), modelAndView);
 				if (fDoc!=null) {
 					switch (newObject.getReturnType()) {
 						case "list":
-							for(Map<String, Object> map : fDoc) {
-					
+							for(Map<String, Object> map : fDoc) {					
 								String convertedId = JsonController.getValue(map, "_id");
 							    map = JsonController.setValue(map, "_id", convertedId);
 								//modelAndView.addObject("objects"+i,map);
@@ -182,7 +180,7 @@ class ObjectController{
 	 	if (dbService.databaseExists(newObject.getDBName(), modelAndView)){
 	 		if (collService.collectionExists(newObject.getDBName(),newObject.getCollName(), modelAndView)){
 	 			List<String> docKeys = JsonController.getJsonKeys(newObject.getDocContents(),modelAndView);
-				List<Map> fDoc = docService.getDocumentByOperator(newObject.getDBName(), newObject.getCollName(), newObject.getDocContents(), newObject.getOperator(), newObject.getSortBy(), newObject.getOrder(), modelAndView);				
+				List<Map> fDoc = docService.getDocumentByOperator(newObject.getDBName(), newObject.getCollName(), newObject.getDocContents(), newObject.getOperator(), "_id", "ASC",1, modelAndView);				
 				if (fDoc!=null) {
 					switch (newObject.getReturnType()) {
 						case "token":

@@ -84,33 +84,37 @@ public class DocumentService {
 		modelAndView.addObject("doc_201","Document created");
 		return _id;
 	}
-	public List<Map> getDocumentByOperator (String dbName, String collName, String dContents, String operator, String sortBy, String order, ModelAndView modelAndView) throws JsonParseException, IOException, JSONException {
+	public List<Map> getDocumentByOperator (String dbName, String collName, String dContents, String operator, String sortBy, String order, int limit, ModelAndView modelAndView) throws JsonParseException, IOException, JSONException {
 		MongoTemplate mTemplate = (MongoTemplate) appconfig.mongoTemplate(mclient, dbName);
-		List<String> docKeys = JsonController.getJsonKeys(dContents,modelAndView);
 		Query query; 
-		if(operator=="none") {
-			String q = null;
-			for (int i=0; i< docKeys.size(); i++) {
-				String dValue = JsonController.getJsonValueByKey(dContents, docKeys.get(i), modelAndView);
-				if(i==0) {
-					q = "{ $"+operator+":[{ "+docKeys.get(i)+":'"+dValue+"'},";
-				}else {
-					q +="{"+docKeys.get(i)+":'"+dValue+"'}";
-				}			
-			}
-			q += "]}";
-		 query =new BasicQuery(q);
-
+		if(dContents.equals("none")) {
+			query = new Query();
 		}else {
-			String dValue = JsonController.getJsonValueByKey(dContents, docKeys.get(0), modelAndView);
-		    query = new Query(Criteria.where(docKeys.get(0)).is(dValue));
+			List<String> docKeys = JsonController.getJsonKeys(dContents,modelAndView);
+			if(!operator.equals("none")) {
+				String q = null;
+				for (int i=0; i< docKeys.size(); i++) {
+					String dValue = JsonController.getJsonValueByKey(dContents, docKeys.get(i), modelAndView);
+					if(i==0) {
+						q = "{ $"+operator+":[{ "+docKeys.get(i)+":'"+dValue+"'},";
+					}else {
+						q +="{"+docKeys.get(i)+":'"+dValue+"'}";
+					}			
+				}
+				q += "]}";
+			 query =new BasicQuery(q);
+	
+			}else {	
+					String dValue = JsonController.getJsonValueByKey(dContents, docKeys.get(0), modelAndView);
+				    query = new Query(Criteria.where(docKeys.get(0)).is(dValue));
+			}
 		}
 		if(order.equals("DESC")) {
 			query.with(Sort.by(Sort.Direction.DESC, sortBy));
 		}else {
 			query.with(Sort.by(Sort.Direction.ASC, sortBy));
 		}
-		
+		query.limit(limit);
 		if(mTemplate.find(query, Map.class, collName)!= null) {
 			modelAndView.addObject("doc_302","Document matched");
 		}else {
