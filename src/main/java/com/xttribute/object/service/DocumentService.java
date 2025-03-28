@@ -32,7 +32,6 @@ public class DocumentService {
 	
 	public Map<String, Object> getDocument (String dbName, String collName, String uKey, String uValue, ModelAndView modelAndView) {
 		Query query = new Query(Criteria.where(uKey).is(uValue));
-		//query.fields().exclude("_class");
 		MongoTemplate mTemplate = (MongoTemplate) appconfig.mongoTemplate(mclient, dbName);
 		if  (mTemplate.findOne(query, Map.class, collName) != null) {
 			modelAndView.addObject("doc_302","Document exists");

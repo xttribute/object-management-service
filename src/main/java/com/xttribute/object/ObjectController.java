@@ -126,9 +126,11 @@ class ObjectController{
 		 	ModelAndView modelAndView = new ModelAndView(new MappingJackson2JsonView());
 		 	if (dbService.databaseExists(newObject.getDBName(), modelAndView)){
 		 		if (collService.collectionExists(newObject.getDBName(),newObject.getCollName(), modelAndView)){
-					String dValue = JsonController.getJsonValueByKey(newObject.getDocContents(), newObject.getUKey(), modelAndView);
-					Map fDoc = docService.getDocument(newObject.getDBName(), newObject.getCollName(), newObject.getUKey(), dValue, modelAndView);
-					if (fDoc!=null) {
+		 			String dValue = JsonController.getJsonValueByKey(newObject.getDocContents(), newObject.getUKey(), modelAndView);
+		 			Map fDoc = docService.getDocument(newObject.getDBName(), newObject.getCollName(), newObject.getUKey(), dValue, modelAndView);
+					if (fDoc!=null) {			
+						String convertedId = JsonController.getValue(fDoc, "_id");
+						fDoc = JsonController.setValue(fDoc, "_id", convertedId);
 						modelAndView.addObject("object", fDoc);
 					}
 					//fDoc.get("name");
@@ -217,7 +219,7 @@ class ObjectController{
 	  }
 	
 	 @PostMapping(value ="/uploadFile", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-	    public ModelAndView uploadFile(@RequestParam("dbName") String dbName, @RequestParam("collName") String collName , @RequestParam("files")MultipartFile[] files, @RequestParam("xid") String xid, @RequestParam("type") String type, @RequestParam("folder") String folder){
+	    public ModelAndView uploadFile(@RequestParam("dbName") String dbName, @RequestParam("collName") String collName , @RequestParam("files")MultipartFile[] files, @RequestParam("xid") String xid, @RequestParam("type") String type, @RequestParam("folder") String folder,  @RequestParam("compId") String compId){
 		 	ModelAndView modelAndView = new ModelAndView(new MappingJackson2JsonView());
 	        LOGGER.debug("Call addFile API");   
 	       
@@ -228,7 +230,11 @@ class ObjectController{
 						case "thumbnail":
 							docService.updateDocument(dbName, collName, "_id", xid, type, file.getFileName(), modelAndView);
 							modelAndView.addObject(type,file.getFileName());
+						case "photo" :
+							docService.updateDocument(dbName, collName, "_id", compId, type, file.getFileName(), modelAndView);
+							modelAndView.addObject(type,file.getFileName());
 	        			}
+	        			
 	        		}
 	        	
 	        }catch (Exception e){
