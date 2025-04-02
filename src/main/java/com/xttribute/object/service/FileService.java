@@ -23,6 +23,7 @@ import com.xttribute.object.util.DataBucketUtil;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.servlet.ModelAndView;
 
 @Service
 @Transactional
@@ -35,7 +36,7 @@ public class FileService{
     private final DataBucketUtil dataBucketUtil = new DataBucketUtil();
     //@Value("${gcp.config.file}")
     //private String gcpConfigFile;
-    public List<FileDto> uploadFiles(MultipartFile[] files , String folder) {
+    public List<FileDto> uploadFiles(MultipartFile[] files , String folder, ModelAndView modelAndView ) {
         LOGGER.debug("Start file uploading service");
         List<FileDto> inputFiles = new ArrayList<>();
 
@@ -55,6 +56,7 @@ public class FileService{
                     LOGGER.debug("File uploaded successfully, file name: {} and url: {}",fileDto.getFileName(), fileDto.getFileUrl() );
                 }
             } catch (Exception e) {
+            	modelAndView.addObject("file_409","File upload to GSP failed");
                 LOGGER.error("Error occurred while uploading. Error: ", e);
                 throw new GCPFileUploadException("Error occurred while uploading");
             }
