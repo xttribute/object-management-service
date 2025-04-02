@@ -224,7 +224,7 @@ class ObjectController{
 	        LOGGER.debug("Call addFile API");   
 	       
 	        try {
-	        	List<FileDto> uploadedFile = fileService.uploadFiles(files, folder);
+	        	List<FileDto> uploadedFile = fileService.uploadFiles(files, folder, modelAndView);
 	        		for(FileDto file :uploadedFile) {
 	        			switch (type) {
 						case "thumbnail":
