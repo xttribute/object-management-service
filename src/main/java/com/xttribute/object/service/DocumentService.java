@@ -55,7 +55,13 @@ public class DocumentService {
 	
 	public void updateDocument(String dbName, String collName, String uKey, String uValue, String updateKey, String updateValue, ModelAndView modelAndView) throws JsonParseException, IOException {
 		Query query = new Query(Criteria.where(uKey).is(uValue));
-		Update update = new Update().set(updateKey, updateValue);
+		Update update = new Update();
+		if(updateKey.equals("view")) {
+			int nextCount = Integer.parseInt(updateValue);
+			 update = new Update().set(updateKey, nextCount);
+		}else {
+			 update = new Update().set(updateKey, updateValue);
+		}
 		MongoTemplate mTemplate = (MongoTemplate) appconfig.mongoTemplate(mclient, dbName);
 		mTemplate.updateMulti(query, update, collName);		
 		modelAndView.addObject("doc_202","Document updated");

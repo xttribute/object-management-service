@@ -243,6 +243,34 @@ class ObjectController{
 	       return modelAndView; 
 	  }
 	
-	
+	 @PostMapping(value ="/updateStats")
+		public ModelAndView updateStats(@RequestBody Object newObject) throws JsonParseException, IOException, JSONException  {
+			 	ModelAndView modelAndView = new ModelAndView(new MappingJackson2JsonView());
+			 	if (dbService.databaseExists(newObject.getDBName(), modelAndView)){
+			 		if (collService.collectionExists(newObject.getDBName(),newObject.getCollName(), modelAndView)){
+						String dValue = JsonController.getJsonValueByKey(newObject.getDocContents(), newObject.getUKey(), modelAndView);
+						Map fDoc = docService.getDocument(newObject.getDBName(), newObject.getCollName(), newObject.getUKey(), dValue, modelAndView);			
+						if (fDoc!=null) {
+							int nextCount;
+							int count = Integer.parseInt(JsonController.getJsonValueByKey(newObject.getDocContents(), "count", modelAndView));
+							switch(newObject.getUpdateKey()) {
+								case "view" :
+									if(fDoc.get("view")==null) {
+										nextCount= 0 + count; 
+									}else {
+									  nextCount = Integer.parseInt(fDoc.get("view").toString())+ count;
+									}
+									docService.updateDocument(newObject.getDBName(), newObject.getCollName(), newObject.getUKey(), fDoc.get(newObject.getUKey()).toString(), newObject.getUpdateKey(), Integer.toString(nextCount), modelAndView);
+									modelAndView.addObject("success","view count updated");
+							}					
+							
+						}
+						//fDoc.get("name");
+						
+			 		}
+			 	}
+				return modelAndView;
+		  }
+		
 	
 }
