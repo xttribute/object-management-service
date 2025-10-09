@@ -152,11 +152,11 @@ class ObjectController{
 	  }
 	
 	@PostMapping(value ="/getObjects")
-	public ModelAndView getObjects(@RequestBody Object newObject) throws JsonParseException, IOException, JSONException  {
+	public ModelAndView getObjects(@RequestBody Object newObject, @RequestParam("page") int page) throws JsonParseException, IOException, JSONException  {
 		ModelAndView modelAndView = new ModelAndView(new MappingJackson2JsonView());
-	 	if (dbService.databaseExists(newObject.getDBName(), modelAndView)){
+		if (dbService.databaseExists(newObject.getDBName(), modelAndView)){
 	 		if (collService.collectionExists(newObject.getDBName(),newObject.getCollName(), modelAndView)){
-				List<Map> fDoc = docService.getDocumentByOperator(newObject.getDBName(), newObject.getCollName(), newObject.getDocContents(), newObject.getOperator(), newObject.getSortBy(), newObject.getOrder(), newObject.getLimit(), modelAndView);
+				List<Map> fDoc = docService.getDocumentByOperator(newObject.getDBName(), newObject.getCollName(), newObject.getDocContents(), newObject.getOperator(), newObject.getSortBy(), newObject.getOrder(), newObject.getLimit(), page, modelAndView);
 				if (fDoc!=null) {
 					switch (newObject.getReturnType()) {
 						case "list":
@@ -182,7 +182,7 @@ class ObjectController{
 	 	if (dbService.databaseExists(newObject.getDBName(), modelAndView)){
 	 		if (collService.collectionExists(newObject.getDBName(),newObject.getCollName(), modelAndView)){
 	 			List<String> docKeys = JsonController.getJsonKeys(newObject.getDocContents(),modelAndView);
-				List<Map> fDoc = docService.getDocumentByOperator(newObject.getDBName(), newObject.getCollName(), newObject.getDocContents(), newObject.getOperator(), "_id", "ASC",1, modelAndView);				
+				List<Map> fDoc = docService.getDocumentByOperator(newObject.getDBName(), newObject.getCollName(), newObject.getDocContents(), newObject.getOperator(), "_id", "ASC",1,1, modelAndView);				
 				if (fDoc!=null) {
 					switch (newObject.getReturnType()) {
 						case "token":

@@ -89,7 +89,7 @@ public class DocumentService {
 		modelAndView.addObject("doc_201","Document created");
 		return _id;
 	}
-	public List<Map> getDocumentByOperator (String dbName, String collName, String dContents, String operator, String sortBy, String order, int limit, ModelAndView modelAndView) throws JsonParseException, IOException, JSONException {
+	public List<Map> getDocumentByOperator (String dbName, String collName, String dContents, String operator, String sortBy, String order, int limit, int page, ModelAndView modelAndView) throws JsonParseException, IOException, JSONException {
 		MongoTemplate mTemplate = (MongoTemplate) appconfig.mongoTemplate(mclient, dbName);
 		Query query; 
 		if(dContents.equals("none")) {
@@ -120,6 +120,7 @@ public class DocumentService {
 			query.with(Sort.by(Sort.Direction.ASC, sortBy));
 		}
 		query.limit(limit);
+		query.skip((page-1)*limit);
 		if(mTemplate.find(query, Map.class, collName)!= null) {
 			modelAndView.addObject("doc_302","Document matched");
 		}else {
