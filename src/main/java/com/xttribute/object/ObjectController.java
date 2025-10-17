@@ -193,6 +193,11 @@ class ObjectController{
 								modelAndView.addObject(newObject.getReturnType(),token);
 								modelAndView.addObject("_id",matchId);
 							}
+						case "result":
+							for(Map<String, Object> map : fDoc) {	
+								String matchId = JsonController.getValue(map, "_id");
+								modelAndView.addObject("_id",matchId);
+							}
 					}
 				}
 	 		}

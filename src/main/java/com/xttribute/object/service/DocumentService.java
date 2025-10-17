@@ -121,11 +121,12 @@ public class DocumentService {
 		}
 		query.limit(limit);
 		query.skip((page-1)*limit);
-		if(mTemplate.find(query, Map.class, collName)!= null) {
+		List<Map> results = mTemplate.find(query, Map.class, collName);
+		if (!results.isEmpty()) {
 			modelAndView.addObject("doc_302","Document matched");
-		}else {
+		} else {
 			modelAndView.addObject("doc_204","No document matched");
 		}
-		return mTemplate.find(query, Map.class, collName);
+		return results;
 	}
 }
