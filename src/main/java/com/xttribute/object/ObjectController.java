@@ -278,5 +278,26 @@ class ObjectController{
 				return modelAndView;
 		  }
 		
+	 @PostMapping(value ="/updateObject")
+	    public ModelAndView updateObject(@RequestBody Object newObject) throws JsonParseException, IOException, JSONException  {
+	        ModelAndView modelAndView = new ModelAndView(new MappingJackson2JsonView());
+	        if (dbService.databaseExists(newObject.getDBName(), modelAndView)){
+	            if (collService.collectionExists(newObject.getDBName(),newObject.getCollName(), modelAndView)){
+	                // Resolve the lookup value from docContents using uKey
+	                String dValue = JsonController.getJsonValueByKey(newObject.getDocContents(), newObject.getUKey(), modelAndView);
+	                Map fDoc = docService.getDocument(newObject.getDBName(), newObject.getCollName(), newObject.getUKey(), dValue, modelAndView);
+	                if (fDoc!=null) {
+	                    // Resolve the update value from docContents using updateKey
+	                    String updateValue = JsonController.getJsonValueByKey(newObject.getDocContents(), newObject.getUpdateKey(), modelAndView);
+	                    // Perform the update
+	                    docService.updateDocument(newObject.getDBName(), newObject.getCollName(), newObject.getUKey(), fDoc.get(newObject.getUKey()).toString(), newObject.getUpdateKey(), updateValue, modelAndView);
+	                    modelAndView.addObject("success","updated");
+	                } else {
+	                    modelAndView.addObject("error","document_not_found");
+	                }
+	            }
+	        }
+	        return modelAndView;
+	    }
 	
 }
