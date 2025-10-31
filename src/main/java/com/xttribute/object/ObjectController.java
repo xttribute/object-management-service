@@ -225,29 +225,31 @@ class ObjectController{
 	  }
 	
 	 @PostMapping(value ="/uploadFile", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-	    public ModelAndView uploadFile(@RequestParam("dbName") String dbName, @RequestParam("collName") String collName , @RequestParam("files")MultipartFile[] files, @RequestParam("xid") String xid, @RequestParam("type") String type, @RequestParam("folder") String folder,  @RequestParam("compId") String compId){
-		 	ModelAndView modelAndView = new ModelAndView(new MappingJackson2JsonView());
-	        LOGGER.debug("Call addFile API");   
-	       
-	        try {
-	        	List<FileDto> uploadedFile = fileService.uploadFiles(files, folder, modelAndView);
-	        		for(FileDto file :uploadedFile) {
-	        			switch (type) {
+    public ModelAndView uploadFile(@RequestParam("dbName") String dbName, @RequestParam("collName") String collName , @RequestParam("files")MultipartFile[] files, @RequestParam("xid") String xid, @RequestParam("type") String type, @RequestParam("folder") String folder,  @RequestParam(value = "compId", required = false, defaultValue = "") String compId){
+		ModelAndView modelAndView = new ModelAndView(new MappingJackson2JsonView());
+        LOGGER.debug("Call addFile API");   
+        
+        try {
+        	List<FileDto> uploadedFile = fileService.uploadFiles(files, folder, modelAndView);
+        			for(FileDto file :uploadedFile) {
+        				switch (type) {
 						case "thumbnail":
 							docService.updateDocument(dbName, collName, "_id", xid, type, file.getFileName(), modelAndView);
 							modelAndView.addObject(type,file.getFileName());
+							break;
 						case "photo" :
 							docService.updateDocument(dbName, collName, "_id", compId, type, file.getFileName(), modelAndView);
 							modelAndView.addObject(type,file.getFileName());
-	        			}
-	        			
-	        		}
-	        	
-	        }catch (Exception e){
-	        
-	        }
-	       return modelAndView; 
-	  }
+							break;
+        				}
+        				
+        			}
+        	
+        }catch (Exception e){
+        	
+        }
+       return modelAndView; 
+  }
 	
 	 @PostMapping(value ="/updateStats")
 		public ModelAndView updateStats(@RequestBody Object newObject) throws JsonParseException, IOException, JSONException  {
