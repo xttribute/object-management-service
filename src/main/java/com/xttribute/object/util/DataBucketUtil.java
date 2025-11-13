@@ -93,7 +93,7 @@ public class DataBucketUtil {
 
     private String checkFileExtension(String fileName) {
         if(fileName != null && fileName.contains(".")){
-            String[] extensionList = {".png", ".jpeg", ".pdf", ".doc", ".mp3",".JPG"};
+            String[] extensionList = {".png", ".jpeg", ".pdf", ".doc", ".mp3",".JPG",".wav",".aac",".m4a"};
 
             for(String extension: extensionList) {
                 if (fileName.endsWith(extension)) {
