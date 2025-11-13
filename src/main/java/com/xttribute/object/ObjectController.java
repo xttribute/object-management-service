@@ -241,6 +241,10 @@ class ObjectController{
 							docService.updateDocument(dbName, collName, "_id", compId, type, file.getFileName(), modelAndView);
 							modelAndView.addObject(type,file.getFileName());
 							break;
+						case "sound" :
+							docService.updateDocument(dbName, collName, "_id", compId, type, file.getFileName(), modelAndView);
+							modelAndView.addObject(type,file.getFileName());
+							break;
         				}
         				
         			}
