@@ -245,6 +245,10 @@ class ObjectController{
 							docService.updateDocument(dbName, collName, "_id", compId, type, file.getFileName(), modelAndView);
 							modelAndView.addObject(type,file.getFileName());
 							break;
+						case "video" :
+							docService.updateDocument(dbName, collName, "_id", compId, type, file.getFileName(), modelAndView);
+							modelAndView.addObject(type,file.getFileName());
+							break;
         				}
         				
         			}
