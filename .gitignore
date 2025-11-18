@@ -33,3 +33,5 @@ build/
 .vscode/
 src/main/resources/xttribute_gcp_file_handler.json
 *.png
+*.m4a
+*.mp4
